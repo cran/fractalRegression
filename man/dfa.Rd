@@ -2,9 +2,9 @@
 % Please edit documentation in R/RcppExports.R
 \name{dfa}
 \alias{dfa}
-\title{Detrended Fluctuation Anlaysis}
+\title{Detrended Fluctuation Analysis}
 \usage{
-dfa(x, order, verbose, sc_min, sc_max, scale_ratio)
+dfa(x, order, verbose, scales, scale_ratio = 2)
 }
 \arguments{
 \item{x}{A real valued vector (i.e., time series data) to be analyzed.}
@@ -15,22 +15,30 @@ is not a pre-determined limit on the order of the polynomial order but the
 user should avoid using a large polynomial on small windows. This can result
 in overfitting and non-meaningful estimates.}
 
-\item{verbose}{A logical that when = 1 indicates that the flucuation function including the log of all included scales as well as the log Rms should be 
-returned as well as the \eqn{\alpha} or when = 0 only the estimated scaling exponent \eqn{\alpha} will be returned.}
+\item{verbose}{If the value of verbose = 1, then a list object is returned 
+that includes: \code{log_scales} the log of all included scales, 
+\code{log_rms} the log root mean square error (RMS) per scale, 
+and \code{alpha} the overall \eqn{\alpha} estimate. If the value of 
+verbose = 0, then a list containing only `alpha` will be returned.}
 
-\item{sc_min}{The minimum window size, specified in the number of data points (i.e., observations) to be included in the smallest window.}
+\item{scales}{An integer valued vector indicating the scales one wishes to resolve
+in the analysis. Best practice is to use scales which are evenly spaced in 
+the logarithmic domain e.g., \code{scales = 2^(4:(N/4))}, where N is the length of the
+time series. Other, logarithmic bases may also be used to give finer 
+resolution of scales while maintaining ~= spacing in the log domain e.g, 
+\code{scales = unique(floor(1.1^(30:(N/4))))}. Note that fractional bases may 
+produce duplicate values after the necessary floor function.}
 
-\item{sc_max}{The maximum window size, specified in the number of data points (i.e., observations) to be included in the largest window.}
-
-\item{scale_ratio}{A scaling factor by which to create successive window sizes from `sc_min` to `sc_max`. 
-This allows one to to maintain even spacing in logarithms while increasing
-scale resolution.}
+\item{scale_ratio}{A scaling factor by which successive window sizes
+were created. The default is 2 but should be addressed according to how 
+scales were generated for example using \code{logscale(16, 100, 1.1)}, 
+where 1.1 is the scale ratio.}
 }
 \value{
 The object returned can take the following forms:
 \itemize{ 
- \item If the value of verbose = 1, then a list object is returned that includes: \code{logScales}
-the log of all included scales, \code{logRMS} the log root mean square error (RMS) per scale, and \code{alpha} the overall \eqn{\alpha} estimate.
+ \item If the value of verbose = 1, then a list object is returned that includes: \code{log_scales}
+the log of all included scales, \code{log_rms} the log root mean square error (RMS) per scale, and \code{alpha} the overall \eqn{\alpha} estimate.
  \item If the value of verbose = 0, then a list containing only `alpha` the estimated scaling exponent \eqn{\alpha} will be returned.
 }
 }
@@ -39,8 +47,10 @@ Fast function for computing detrended fluctuation analysis (DFA), a widely used 
 DFA is also a form of mono-fractal analysis that indicates the degree of self-similarity across temporal scales.
 }
 \details{
-Details of the algorithm are specified in detail in Peng et al. (1994) and visualized nicely in Kelty-Stephen et al. (2016).
-The output of the algorithm is an \eqn{\alpha} (alpha) estimate which is a generalization of the Hurst Exponent. Conventional interpretation of \eqn{\alpha} is:
+Details of the algorithm are specified in detail in Peng et al. 
+(1994) and visualized nicely in Kelty-Stephen et al. (2016). The output of 
+the algorithm is an \eqn{\alpha} (alpha) estimate which is a generalization
+ of the Hurst Exponent. Conventional interpretation of \eqn{\alpha} is:
 \itemize{
  \item \eqn{\alpha < 0.5 =} anti-correlated
  \item \eqn{\alpha ~= 0.5 =} uncorrelated, white noise
@@ -50,10 +60,13 @@ The output of the algorithm is an \eqn{\alpha} (alpha) estimate which is a gener
  \item \eqn{\alpha ~= 1.5 =} fractional brownian motion
 } 
 
-We recommend a few points of consideration here in using this function. One is to be sure to 
-verify there are not cross-over points in the logScale-logFluctuation plots (Peng et al., 1995; Perakakis et al ., 2009). Cross-over points 
-(or a visible change in the slope as a function of of scale) indicate that a mono-fractal characterization 
-does not sufficiently characterize the data. If cross-over points are evident, we recommend proceeding to using the mfdfa() to estimate the multi-fractal
+We recommend a few points of consideration here in using this function. 
+One is to be sure to verify there are not cross-over points in the logScale-
+logFluctuation plots (Peng et al., 1995; Perakakis et al ., 2009). Cross-
+over points (or a visible change in the slope as a function of of scale)
+indicate that a mono-fractal characterization does not sufficiently 
+characterize the data. If cross-over points are evident, we recommend 
+proceeding to using the mfdfa() to estimate the multi-fractal
 fluctuation dynamics across scales.
 
 While it is common to use only linear detrending with DFA, it is important to inspect the trends in the data to determine
@@ -63,17 +76,15 @@ General recommendations for choosing the min and max scale are an sc_min = 10 an
 See Eke et al. (2002) and Gulich and Zunino (2014) for additional considerations.
 }
 \examples{
-
-
-
 noise <- rnorm(5000)
+
+scales <- c(16,32,64,128,256,512,1024)
 
 dfa.noise.out <- dfa(
     x = noise, 
     order = 1, 
     verbose = 1, 
-    sc_min = 16, 
-    sc_max = length(noise)/4, 
+    scales = scales,
     scale_ratio = 2)
 
 pink.noise <- fgn_sim(n = 5000, H = 0.9)
@@ -82,8 +93,7 @@ dfa.pink.out <- dfa(
     x = pink.noise, 
     order = 1, 
     verbose = 1, 
-    sc_min = 16, 
-    sc_max = length(pink.noise)/4, 
+    scales = scales, 
     scale_ratio = 2)
 
 anticorr.noise <- fgn_sim(n = 5000, H = 0.25)
@@ -92,13 +102,9 @@ dfa.anticorr.out <- dfa(
     x = anticorr.noise, 
     order = 1, 
     verbose = 1, 
-    sc_min = 16, 
-    sc_max = length(anticorr.noise)/4, 
+    scales = scales, 
     scale_ratio = 2)
-
-
-
-
+    
 }
 \references{
 Eke, A., Herman, P., Kocsis, L., & Kozak, L. R. (2002). Fractal characterization of complexity in temporal physiological signals. Physiological measurement, 23(1), R1-R38.

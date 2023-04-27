@@ -4,13 +4,14 @@
 \alias{mfdfa}
 \title{Multifractal Detrended Fluctuation Analysis}
 \usage{
-mfdfa(x, q, order, scale_min, scale_max, scale_ratio)
+mfdfa(x, q, order, scales, scale_ratio)
 }
 \arguments{
 \item{x}{A real valued vector (i.e., time series data) to be analyzed.}
 
 \item{q}{A real valued vector indicating the statistical moments (q) to use 
-in the analysis.}
+in the analysis. q must span negative and positive values e.g., -3:3, 
+otherwise and error may be produced.}
 
 \item{order}{is an integer indicating the polynomial order used for 
 detrending the local windows (e.g, 1 = linear, 2 = quadratic, etc.). There 
@@ -18,19 +19,24 @@ is not pre-determined limit on the order of the polynomial order but the
 user should avoid using a large polynomial on small windows. This can result
 in overfitting and non-meaningful estimates.}
 
-\item{scale_min}{An integer indicating the minimum window size, specified in the number of data points (i.e., observations) to be included in the smallest window.}
+\item{scales}{An integer valued vector indicating the scales one wishes to resolve
+in the analysis. Best practice is to use scales which are evenly spaced in 
+the logarithmic domain e.g., \code{scales = 2^(4:(N/4))}, where N is the length of the
+time series. Other, logarithmic bases may also be used to give finer 
+resolution of scales while maintaining ~= spacing in the log domain e.g, 
+\code{scales = unique(floor(1.1^(30:(N/4))))}. Note that fractional bases may 
+produce duplicate values after the necessary floor function.}
 
-\item{scale_max}{An integer indicating the maximum window size, specified in the number of data points (i.e., observations) to be included in the largest window. indicating largest scale to resolve}
-
-\item{scale_ratio}{A scaling factor by which to create successive window sizes from `scale_min` to `scale_max`. 
-This allows one to to maintain even spacing in logarithms while increasing
-scale resolution.}
+\item{scale_ratio}{A scaling factor by which successive window sizes 
+were created. The default is 2 but should be addressed according to how 
+scales were generated for example using \code{logscale(16, 100, 1.1)}, 
+where 1.1 is the scale ratio.}
 }
 \value{
 The output of the algorithm is a list that includes:
 \itemize{ 
- \item \code{log2scale} The log2 scales used for the analysis
- \item \code{log2Fq} The log2 of the fluctuation functions for each scale and q 
+ \item \code{log_scale} The log scales used for the analysis
+ \item \code{log_fq} The log of the fluctuation functions for each scale and q 
  \item \code{Hq} The q-order Hurst exponent (generalized Hurst exponent)
  \item \code{Tau} The q-order mass exponent
  \item \code{q} The q-order statistical moments
@@ -39,8 +45,11 @@ The output of the algorithm is a list that includes:
 }
 }
 \description{
-Fast function for computing multifractal detrended fluctuation analysis (MF-DFA), a widely used method for estimating the family of long-range temporal correlations or scaling exponents in time series data. 
-MF-DFA is also a form of multifractal analysis that indicates the degree of interaction across temporal scales.
+Fast function for computing multifractal detrended fluctuation analysis 
+(MF-DFA), a widely used method for estimating the family of long-range 
+temporal correlations or scaling exponents in time series data. 
+MF-DFA is also a form of multifractal analysis that indicates the degree 
+of interaction across temporal scales.
 }
 \details{
 Details of the algorithm are specified in detail in Kantelhardt et al. (2001; 2002) and visualized nicely in Kelty-Stephen et al. (2016).
@@ -62,11 +71,12 @@ See Eke et al. (2002), Gulich and Zunino (2014), Ihlen (2012), and  for addition
 
 noise <- rnorm(5000)
 
+scales <- c(16,32,64,128,256,512,1024)
+
 mf.dfa.white.out <- mfdfa(
     x = noise, q = c(-5:5), 
     order = 1, 
-    scale_min = 16, 
-    scale_max = length(noise)/4, 
+    scales = scales, 
     scale_ratio = 2) 
  
 pink.noise <- fgn_sim(n = 5000, H = 0.9)
@@ -75,8 +85,7 @@ mf.dfa.pink.out <- mfdfa(
     x = pink.noise, 
     q = c(-5:5), 
     order = 1, 
-    scale_min = 16, 
-    scale_max = length(pink.noise)/4, 
+    scales = scales, 
     scale_ratio = 2)
 
 

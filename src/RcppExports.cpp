@@ -2,6 +2,7 @@
 // Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #include <RcppArmadillo.h>
+#include <RcppEigen.h>
 #include <Rcpp.h>
 
 using namespace Rcpp;
@@ -26,18 +27,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // dfa
-List dfa(NumericVector x, int order, int verbose, double sc_min, double sc_max, double scale_ratio);
-RcppExport SEXP _fractalRegression_dfa(SEXP xSEXP, SEXP orderSEXP, SEXP verboseSEXP, SEXP sc_minSEXP, SEXP sc_maxSEXP, SEXP scale_ratioSEXP) {
+List dfa(arma::vec x, int order, arma::uword verbose, arma::uvec scales, double scale_ratio);
+RcppExport SEXP _fractalRegression_dfa(SEXP xSEXP, SEXP orderSEXP, SEXP verboseSEXP, SEXP scalesSEXP, SEXP scale_ratioSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP);
     Rcpp::traits::input_parameter< int >::type order(orderSEXP);
-    Rcpp::traits::input_parameter< int >::type verbose(verboseSEXP);
-    Rcpp::traits::input_parameter< double >::type sc_min(sc_minSEXP);
-    Rcpp::traits::input_parameter< double >::type sc_max(sc_maxSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type verbose(verboseSEXP);
+    Rcpp::traits::input_parameter< arma::uvec >::type scales(scalesSEXP);
     Rcpp::traits::input_parameter< double >::type scale_ratio(scale_ratioSEXP);
-    rcpp_result_gen = Rcpp::wrap(dfa(x, order, verbose, sc_min, sc_max, scale_ratio));
+    rcpp_result_gen = Rcpp::wrap(dfa(x, order, verbose, scales, scale_ratio));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -57,30 +57,115 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// mfdfa
-List mfdfa(NumericVector x, NumericVector q, int order, double scale_min, double scale_max, double scale_ratio);
-RcppExport SEXP _fractalRegression_mfdfa(SEXP xSEXP, SEXP qSEXP, SEXP orderSEXP, SEXP scale_minSEXP, SEXP scale_maxSEXP, SEXP scale_ratioSEXP) {
+// poly_residuals
+arma::vec poly_residuals(arma::vec yr, int m);
+RcppExport SEXP _fractalRegression_poly_residuals(SEXP yrSEXP, SEXP mSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type q(qSEXP);
-    Rcpp::traits::input_parameter< int >::type order(orderSEXP);
-    Rcpp::traits::input_parameter< double >::type scale_min(scale_minSEXP);
-    Rcpp::traits::input_parameter< double >::type scale_max(scale_maxSEXP);
-    Rcpp::traits::input_parameter< double >::type scale_ratio(scale_ratioSEXP);
-    rcpp_result_gen = Rcpp::wrap(mfdfa(x, q, order, scale_min, scale_max, scale_ratio));
+    Rcpp::traits::input_parameter< arma::vec >::type yr(yrSEXP);
+    Rcpp::traits::input_parameter< int >::type m(mSEXP);
+    rcpp_result_gen = Rcpp::wrap(poly_residuals(yr, m));
     return rcpp_result_gen;
 END_RCPP
 }
-// colmeans
-NumericVector colmeans(NumericMatrix X);
-RcppExport SEXP _fractalRegression_colmeans(SEXP XSEXP) {
+// lm_c
+arma::vec lm_c(arma::vec xs, arma::vec yr);
+RcppExport SEXP _fractalRegression_lm_c(SEXP xsSEXP, SEXP yrSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
-    rcpp_result_gen = Rcpp::wrap(colmeans(X));
+    Rcpp::traits::input_parameter< arma::vec >::type xs(xsSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type yr(yrSEXP);
+    rcpp_result_gen = Rcpp::wrap(lm_c(xs, yr));
+    return rcpp_result_gen;
+END_RCPP
+}
+// seq_int
+arma::uvec seq_int(arma::uword length);
+RcppExport SEXP _fractalRegression_seq_int(SEXP lengthSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::uword >::type length(lengthSEXP);
+    rcpp_result_gen = Rcpp::wrap(seq_int(length));
+    return rcpp_result_gen;
+END_RCPP
+}
+// seq_int_range
+arma::uvec seq_int_range(arma::uword start, arma::uword stop);
+RcppExport SEXP _fractalRegression_seq_int_range(SEXP startSEXP, SEXP stopSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::uword >::type start(startSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type stop(stopSEXP);
+    rcpp_result_gen = Rcpp::wrap(seq_int_range(start, stop));
+    return rcpp_result_gen;
+END_RCPP
+}
+// detrend_cov
+arma::vec detrend_cov(arma::vec x, arma::vec y, int m);
+RcppExport SEXP _fractalRegression_detrend_cov(SEXP xSEXP, SEXP ySEXP, SEXP mSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
+    Rcpp::traits::input_parameter< int >::type m(mSEXP);
+    rcpp_result_gen = Rcpp::wrap(detrend_cov(x, y, m));
+    return rcpp_result_gen;
+END_RCPP
+}
+// mfdfa
+List mfdfa(arma::vec x, arma::vec q, int order, arma::uvec scales, double scale_ratio);
+RcppExport SEXP _fractalRegression_mfdfa(SEXP xSEXP, SEXP qSEXP, SEXP orderSEXP, SEXP scalesSEXP, SEXP scale_ratioSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type q(qSEXP);
+    Rcpp::traits::input_parameter< int >::type order(orderSEXP);
+    Rcpp::traits::input_parameter< arma::uvec >::type scales(scalesSEXP);
+    Rcpp::traits::input_parameter< double >::type scale_ratio(scale_ratioSEXP);
+    rcpp_result_gen = Rcpp::wrap(mfdfa(x, q, order, scales, scale_ratio));
+    return rcpp_result_gen;
+END_RCPP
+}
+// mfdfa_cj
+List mfdfa_cj(arma::vec Timeseries, arma::vec qValues, arma::uvec scales);
+RcppExport SEXP _fractalRegression_mfdfa_cj(SEXP TimeseriesSEXP, SEXP qValuesSEXP, SEXP scalesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type Timeseries(TimeseriesSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type qValues(qValuesSEXP);
+    Rcpp::traits::input_parameter< arma::uvec >::type scales(scalesSEXP);
+    rcpp_result_gen = Rcpp::wrap(mfdfa_cj(Timeseries, qValues, scales));
+    return rcpp_result_gen;
+END_RCPP
+}
+// win_sums
+arma::vec win_sums(arma::vec x, unsigned int window);
+RcppExport SEXP _fractalRegression_win_sums(SEXP xSEXP, SEXP windowSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type window(windowSEXP);
+    rcpp_result_gen = Rcpp::wrap(win_sums(x, window));
+    return rcpp_result_gen;
+END_RCPP
+}
+// fitting
+arma::vec fitting(arma::vec x, arma::vec y);
+RcppExport SEXP _fractalRegression_fitting(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(fitting(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -153,10 +238,17 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_fractalRegression_dcca", (DL_FUNC) &_fractalRegression_dcca, 4},
-    {"_fractalRegression_dfa", (DL_FUNC) &_fractalRegression_dfa, 6},
+    {"_fractalRegression_dfa", (DL_FUNC) &_fractalRegression_dfa, 5},
     {"_fractalRegression_dlcca", (DL_FUNC) &_fractalRegression_dlcca, 6},
-    {"_fractalRegression_mfdfa", (DL_FUNC) &_fractalRegression_mfdfa, 6},
-    {"_fractalRegression_colmeans", (DL_FUNC) &_fractalRegression_colmeans, 1},
+    {"_fractalRegression_poly_residuals", (DL_FUNC) &_fractalRegression_poly_residuals, 2},
+    {"_fractalRegression_lm_c", (DL_FUNC) &_fractalRegression_lm_c, 2},
+    {"_fractalRegression_seq_int", (DL_FUNC) &_fractalRegression_seq_int, 1},
+    {"_fractalRegression_seq_int_range", (DL_FUNC) &_fractalRegression_seq_int_range, 2},
+    {"_fractalRegression_detrend_cov", (DL_FUNC) &_fractalRegression_detrend_cov, 3},
+    {"_fractalRegression_mfdfa", (DL_FUNC) &_fractalRegression_mfdfa, 5},
+    {"_fractalRegression_mfdfa_cj", (DL_FUNC) &_fractalRegression_mfdfa_cj, 3},
+    {"_fractalRegression_win_sums", (DL_FUNC) &_fractalRegression_win_sums, 2},
+    {"_fractalRegression_fitting", (DL_FUNC) &_fractalRegression_fitting, 2},
     {"_fractalRegression_mlra", (DL_FUNC) &_fractalRegression_mlra, 6},
     {"_fractalRegression_lagn", (DL_FUNC) &_fractalRegression_lagn, 2},
     {"_fractalRegression_polyfit", (DL_FUNC) &_fractalRegression_polyfit, 2},
