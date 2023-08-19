@@ -1,4 +1,4 @@
-a35719196691a0899c2d11fc313ff8ff *DESCRIPTION
+38a1defcfac87b7ead34054baf929f19 *DESCRIPTION
 8d68ff5c4587916a53cb69f17d496d3f *NAMESPACE
 9f7b247553d7eb28b1f78350a504013f *R/RcppExports.R
 61ce566a903ad9d7b959619c33a19753 *R/data.R
@@ -47,7 +47,7 @@ b0f34a587b409d49736bcdc6cb51914d *src/dlcca.cpp
 076d95b28b321ec4a5c63666b79b80fd *src/mfdfa.cpp
 5acaf033bb926c553e1dad6eec6073e4 *src/mfdfa_cj.cpp
 5bceb76b65e5dd3e6cb02e0f64e5982f *src/mlra.cpp
-8394a49bebe1519a755c0c848cdef10c *src/mra.cpp
+84f456aa6e352d63fef101d4c02c7b6f *src/mra.cpp
 882009021522300056c6e03e72563290 *src/poly_residuals.cpp
 13dd3286d759d1f066e8596216819e35 *src/seg_int.cpp
 4d865645fb94f2510e13c4bff1ef2c90 *src/seg_int_range.cpp
